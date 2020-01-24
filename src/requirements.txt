@@ -1,0 +1,6 @@
+fastapi==0.46.0
+uvicorn
+
+# dev
+pytest
+requests
