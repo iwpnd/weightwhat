@@ -18,5 +18,7 @@ services:
             - POSTGRES_USER=username
             - POSTGRES_PASSWORD=password
             - POSTGRES_DB=weightwhat_dev
+        ports:
+            - "5432:5432"
 volumes:
     postgres_data:

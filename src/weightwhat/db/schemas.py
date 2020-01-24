@@ -1,7 +1,9 @@
-from weightwhat.db.db import metadata
-from sqlalchemy import Column, DateTime, Integer, Float, Table
+from sqlalchemy import MetaData
+from sqlalchemy import Column, DateTime, Integer, Float, Table, TIMESTAMP
 from sqlalchemy.sql import func
 from typing import Tuple
+
+metadata = MetaData()
 
 
 def timestamps() -> Tuple[Column, Column]:
