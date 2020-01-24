@@ -1,5 +1,7 @@
 fastapi==0.46.0
 uvicorn
+loguru
+asyncpg==0.20.0
 
 # dev
 pytest
