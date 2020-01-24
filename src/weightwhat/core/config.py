@@ -5,7 +5,7 @@ from typing import List
 from databases import DatabaseURL
 
 from loguru import logger
-from starlette.datastructures import CommaSeparatedStrings
+from starlette.datastructures import CommaSeparatedStrings, Secret
 from starlette.config import Config
 
 from weightwhat.core.logging import InterceptHandler
