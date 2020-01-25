@@ -4,7 +4,7 @@ from weightwhat.db.schemas import weights
 from loguru import logger
 
 
-def _log_query(query: str, query_params: dict) -> None:
+def _log_query(query: str, query_params: dict = None) -> None:
     logger.debug(f"query: {str(query)}, values: {query_params}")
 
 
@@ -18,3 +18,9 @@ async def get(id: int):
     query = weights.select().where(id == weights.c.id)
     _log_query(query=str(query).replace("\n", ""), query_params=id)
     return await database.fetch_one(query=query)
+
+
+async def get_all():
+    query = weights.select()
+    _log_query(query=str(query).replace("\n", ""), query_params="")
+    return await database.fetch_all(query=query)

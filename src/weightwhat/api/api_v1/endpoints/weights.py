@@ -4,6 +4,7 @@ from fastapi import APIRouter, HTTPException
 from datetime import datetime
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_404_NOT_FOUND
 from loguru import logger
+from typing import List
 
 router = APIRouter()
 
@@ -43,3 +44,12 @@ async def get_weight(id: int):
         )
 
     return weight
+
+
+@router.get("/weights", response_model=List[WeightDB], status_code=HTTP_200_OK)
+async def get_all_weights():
+    weights = await crud.get_all()
+    if not weights:
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="no weights found")
+
+    return weights
