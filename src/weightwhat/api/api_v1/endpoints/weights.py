@@ -2,7 +2,7 @@ from weightwhat.api.api_v1 import crud
 from weightwhat.models.models import WeightDB, WeightSchema
 from fastapi import APIRouter, HTTPException
 from datetime import datetime
-from starlette.status import HTTP_201_CREATED, HTTP_404_NOT_FOUND
+from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_404_NOT_FOUND
 from loguru import logger
 
 router = APIRouter()
@@ -32,3 +32,14 @@ async def create_weight(payload: WeightSchema) -> WeightDB:
     }
 
     return response_object
+
+
+@router.get("/weight/{id}", response_model=WeightDB, status_code=HTTP_200_OK)
+async def get_weight(id: int):
+    weight = await crud.get(id)
+    if not weight:
+        raise HTTPException(
+            status_code=HTTP_404_NOT_FOUND, detail="weight id not found"
+        )
+
+    return weight
