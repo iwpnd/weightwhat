@@ -4,6 +4,7 @@ from datetime import datetime
 
 class WeightSchema(BaseModel):
     weight: float = Field(..., title="Input weight")
+    created_at: datetime = datetime.now()
 
 
 class WeightDB(WeightSchema):

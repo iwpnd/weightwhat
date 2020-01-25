@@ -2,6 +2,8 @@ from weightwhat.models.models import WeightSchema
 from weightwhat.db.db import database
 from weightwhat.db.schemas import weights
 from loguru import logger
+from datetime import datetime
+from weightwhat.core.config import STRFTIME
 
 
 def _log_query(query: str, query_params: dict = None) -> None:
@@ -9,7 +11,12 @@ def _log_query(query: str, query_params: dict = None) -> None:
 
 
 async def post(payload: WeightSchema):
-    query = weights.insert().values(weight=payload.weight)
+    query = weights.insert().values(
+        weight=payload.weight,
+        created_at=datetime.now().strftime(STRFTIME)
+        if not payload.created_at
+        else payload.created_at,
+    )
     _log_query(query=str(query), query_params=query.parameters)
     return await database.execute(query)
 

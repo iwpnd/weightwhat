@@ -16,6 +16,7 @@ ALLOWED_HOSTS = CommaSeparatedStrings(os.getenv("ALLOWED_HOSTS", ""))
 API_PREFIX = "/api"
 PROJECT_NAME = "weight-what-API"
 VERSION = "0.0.1"
+STRFTIME = "%Y-%m-%d %H:%M:%S"
 
 DEBUG: bool = config("DEBUG", cast=bool, default=False)
 

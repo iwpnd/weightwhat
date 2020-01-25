@@ -29,7 +29,9 @@ async def create_weight(payload: WeightSchema) -> WeightDB:
     response_object = {
         "id": weight_id,
         "weight": payload.weight,
-        "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        if not payload.created_at
+        else payload.created_at,
     }
 
     return response_object
