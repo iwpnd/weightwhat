@@ -16,4 +16,5 @@ async def post(payload: WeightSchema):
 
 async def get(id: int):
     query = weights.select().where(id == weights.c.id)
+    _log_query(query=str(query).replace("\n", ""), query_params=id)
     return await database.fetch_one(query=query)
