@@ -17,7 +17,6 @@ async def create_weight(payload: WeightSchema) -> WeightDB:
 
     And this path operation will:
 
-    Example:
     * return {
         "id": primary_key,
         "weight: 88.1,
