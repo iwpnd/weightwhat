@@ -16,19 +16,19 @@ class WeightDB(WeightSchema):
 
 
 class WeightFromTo(BaseModel):
-    fromdate: date = None
-    todate: date = None
+    fromdate: datetime = None
+    todate: datetime = None
 
     @validator("todate", pre=True, always=True)
     def set_date_now(cls, v):
         if isinstance(v, str):
-            return datetime.strptime(v, "%Y%m%d").date()
+            return datetime.strptime(v, "%Y%m%d")
         else:
-            return date.today()
+            return datetime.now()
 
     @validator("fromdate", pre=True, always=True)
     def set_date_past(cls, v):
         if isinstance(v, str):
-            return datetime.strptime(v, "%Y%m%d").date()
+            return datetime.strptime(v, "%Y%m%d")
         else:
-            return date(1900, 1, 1)
+            return datetime(1900, 1, 1)

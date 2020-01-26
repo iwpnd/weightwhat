@@ -28,6 +28,14 @@ async def get(id: int):
 
 
 async def get_all(fromdate: date = None, todate: date = None):
-    query = weights.select()
+    if fromdate or todate:
+        query = (
+            weights.select()
+            .where(weights.c.created_at <= todate)
+            .where(weights.c.created_at >= fromdate)
+        )
+    else:
+        query = weights.select()
+
     _log_query(query=str(query).replace("\n", ""), query_params="")
     return await database.fetch_all(query=query)
