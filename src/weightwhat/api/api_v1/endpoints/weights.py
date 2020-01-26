@@ -39,6 +39,20 @@ async def create_weight(payload: WeightSchema) -> WeightDB:
 
 @router.get("/weight/{id}", response_model=WeightDB, status_code=HTTP_200_OK)
 async def get_weight(id: int):
+    """
+    Get a weight by id
+
+    This will fetch a weight with a given id
+
+    And this path operation will:
+
+    * return {
+        "id": primary_key,
+        "weight: 88.1,
+        "created_at": "2020-11-01 13:37:00",
+        "updated_at": "2020-11-01 13:37:00"
+    }
+    """
     weight = await crud.get(id)
     if not weight:
         raise HTTPException(
@@ -50,6 +64,28 @@ async def get_weight(id: int):
 
 @router.get("/weights", response_model=List[WeightDB], status_code=HTTP_200_OK)
 async def get_all_weights():
+    """
+    Get all weights
+
+    This will fetch all weights that are currently stored in the database without exceptions
+
+    And this path operation will:
+
+    * return [
+        {
+        "id": 1,
+        "weight: 88.1,
+        "created_at": "2020-11-01 13:37:00",
+        "updated_at": "2020-11-01 13:37:00"
+        },
+        {
+        "id": 2,
+        "weight: 88.2,
+        "created_at": "2020-11-02 13:37:00",
+        "updated_at": "2020-11-02 13:37:00"
+        },
+        ]
+    """
     weights = await crud.get_all()
     if not weights:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="no weights found")
