@@ -1,6 +1,7 @@
-from pydantic import BaseModel, Field
-import pydantic
+from pydantic import BaseModel, Field, validator
+from pydantic.dataclasses import dataclass
 from datetime import datetime, date
+from typing import Optional
 
 
 class WeightSchema(BaseModel):
@@ -14,20 +15,25 @@ class WeightDB(WeightSchema):
     updated_at: datetime = None
 
 
-def parse_date(cls, value) -> date:
-    return datetime.strptime(value, "%Y%m%d").date()
-
-
-def date_validator(field: str) -> classmethod:
-    decorator = pydantic.validator(field, pre=True, allow_reuse=True)
-    validator = decorator(parse_date)
-    return validator
-
-
+@dataclass
 class WeightFromTo(BaseModel):
-    fromdate: date = None
-    todate: date = None
+    fromdate: Optional[date] = date(1900, 1, 1)
+    todate: Optional[date] = date.today()
 
-    # validators
-    _ensure_fromdate_is_normalized: classmethod = date_validator("fromdate")
-    _ensure_todate_is_normalized: classmethod = date_validator("todate")
+    @validator("fromdate", pre=True, always=True, whole=True)
+    def parse_date_fromdate(cls, fromdate):
+        if not fromdate:
+            return date.today()
+        elif isinstance(fromdate, str):
+            return datetime.strptime(fromdate, "%Y%m%d").date()
+        else:
+            fromdate
+
+    @validator("todate", pre=True, always=True, whole=True)
+    def parse_date_todate(cls, todate):
+        if not todate:
+            return date.today()
+        elif isinstance(todate, str):
+            return datetime.strptime(todate, "%Y%m%d").date()
+        else:
+            todate

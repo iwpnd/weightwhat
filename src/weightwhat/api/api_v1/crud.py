@@ -2,7 +2,7 @@ from weightwhat.models.models import WeightSchema
 from weightwhat.db.db import database
 from weightwhat.db.schemas import weights
 from loguru import logger
-from datetime import datetime
+from datetime import datetime, date
 from weightwhat.core.config import STRFTIME
 
 
@@ -27,7 +27,7 @@ async def get(id: int):
     return await database.fetch_one(query=query)
 
 
-async def get_all():
+async def get_all(fromdate: date = None, todate: date = None):
     query = weights.select()
     _log_query(query=str(query).replace("\n", ""), query_params="")
     return await database.fetch_all(query=query)
