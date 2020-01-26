@@ -2,6 +2,7 @@ import json
 import pytest
 from weightwhat.api.api_v1 import crud
 from weightwhat.core.config import API_PREFIX
+from datetime import date
 
 
 def test_create_weight(test_app, monkeypatch):
@@ -130,8 +131,8 @@ def test_get_all_weights_from_to(test_app, monkeypatch):
 
     monkeypatch.setattr(crud, "get_all", mock_get_all_from_to)
 
-    from_date = "20201005"
-    to_date = "20201010"
+    from_date = "2020-10-05"
+    to_date = "2020-10-10"
 
     response = test_app.get(
         API_PREFIX + f"/weights", params={"fromdate": from_date, "todate": to_date}
@@ -141,31 +142,33 @@ def test_get_all_weights_from_to(test_app, monkeypatch):
     assert response.json() == response_data
 
 
-def test_get_all_weights_from_to_fails(test_app, monkeypatch):
-
-    response_data = [
-        {
-            "created_at": "2020-10-07T10:10:10",
-            "id": 2,
-            "updated_at": "2020-10-07T10:10:10",
-            "weight": 101.0,
-        },
-        {
-            "created_at": "2020-10-05T10:10:10",
-            "id": 3,
-            "updated_at": "2020-10-05T10:10:10",
-            "weight": 102.0,
-        },
-    ]
-
-    async def mock_get_all_from_to(fromdate: str, todate: str):
-        return response_data
+def test_get_all_weights_from_to_fails_wrong_input(test_app, monkeypatch):
+    async def mock_get_all_from_to(fromdate: date, todate: date):
+        return None
 
     monkeypatch.setattr(crud, "get_all", mock_get_all_from_to)
 
-    from_date = "20201005"
+    from_date = "test"
+    to_date = "test"
 
-    response = test_app.get(API_PREFIX + f"/weights", params={"fromdate": from_date})
+    response = test_app.get(
+        API_PREFIX + f"/weights?fromdate={from_date}&todate={to_date}"
+    )
 
-    assert response.status_code == 200
-    assert response.json() == response_data
+    assert response.status_code == 422
+
+
+def test_get_all_weights_from_to_fails(test_app, monkeypatch):
+    async def mock_get_all_from_to(fromdate: date, todate: date):
+        return None
+
+    monkeypatch.setattr(crud, "get_all", mock_get_all_from_to)
+
+    from_date = 20
+    to_date = 20
+
+    response = test_app.get(
+        API_PREFIX + f"/weights?fromdate={from_date}&todate={to_date}"
+    )
+
+    assert response.status_code == 404

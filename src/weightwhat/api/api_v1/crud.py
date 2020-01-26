@@ -27,7 +27,7 @@ async def get(id: int):
     return await database.fetch_one(query=query)
 
 
-async def get_all(fromdate: date = None, todate: date = None):
+async def get_all(fromdate: datetime = None, todate: datetime = None):
     if fromdate or todate:
         query = (
             weights.select()

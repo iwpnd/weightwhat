@@ -1,7 +1,7 @@
 from weightwhat.api.api_v1 import crud
 from weightwhat.models.models import WeightDB, WeightSchema, WeightFromTo
 from fastapi import APIRouter, HTTPException, Depends
-from datetime import datetime
+from datetime import datetime, date
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_404_NOT_FOUND
 from loguru import logger
 from typing import List
@@ -63,7 +63,7 @@ async def get_weight(id: int):
 
 
 @router.get("/weights", response_model=List[WeightDB], status_code=HTTP_200_OK)
-async def get_all_weights(fromdate: str = None, todate: str = None):
+async def get_all_weights(fromdate: date = None, todate: date = None):
     """
     Get all weights
 
@@ -86,6 +86,7 @@ async def get_all_weights(fromdate: str = None, todate: str = None):
         },
         ]
     """
+
     if fromdate or todate:
         limit_dates = WeightFromTo(fromdate=fromdate, todate=todate)
         weights = await crud.get_all(
