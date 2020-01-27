@@ -64,6 +64,17 @@ def test_get_weight_by_incorrect_id(test_app, monkeypatch):
     assert response.json()["detail"] == "weight id not found"
 
 
+def test_get_weight_id_zero_invalid(test_app, monkeypatch):
+    async def mock_get(id):
+        return 0
+
+    monkeypatch.setattr(crud, "get", mock_get)
+
+    response = test_app.get(API_PREFIX + "/weight/0")
+
+    assert response.status_code == 422
+
+
 def test_get_all_weights(test_app, monkeypatch):
     test_data = [
         {
