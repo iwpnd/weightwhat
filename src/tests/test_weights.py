@@ -199,7 +199,11 @@ def test_update_weight(test_app, monkeypatch, id, payload, status_code):
 
 @pytest.mark.parametrize(
     "id, payload, status_code",
-    [[1, {}, 422], [99999, {"weight": 101, "created_at": "2020-01-27T10:53:04"}, 404]],
+    [
+        [1, {}, 422],
+        [99999, {"weight": 101, "created_at": "2020-01-27T10:53:04"}, 404],
+        [0, {"weight": 101, "created_at": "2020-01-27T10:53:04"}, 422],
+    ],
 )
 def test_update_weight_invalid(test_app, monkeypatch, id, payload, status_code):
     async def mock_get(id):
@@ -230,13 +234,13 @@ def test_remove_weight(test_app, monkeypatch):
     assert response.json() == test_data
 
 
-def test_remove_weight_incorrect_id(test_app, monkeypatch):
+@pytest.mark.parametrize("id, status_code", [[99999, 404], [0, 422]])
+def test_remove_weight_incorrect_id(test_app, monkeypatch, id, status_code):
     async def mock_get(id):
         return None
 
     monkeypatch.setattr(crud, "get", mock_get)
 
-    response = test_app.delete(API_PREFIX + "/weight/99999")
+    response = test_app.delete(API_PREFIX + f"/weight/{id}")
 
-    assert response.status_code == 404
-    assert response.json()["detail"] == "weight not found"
+    assert response.status_code == status_code
