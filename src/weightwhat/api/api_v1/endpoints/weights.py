@@ -24,7 +24,7 @@ async def create_weight(payload: WeightSchema) -> WeightDB:
         "created_at": "2020-11-01 13:37:00"
     }
     """
-
+    logger.debug(f"received: {payload.weight} / {payload.created_at}")
     weight_id = await crud.post(payload)
     response_object = {
         "id": weight_id,
@@ -69,8 +69,11 @@ async def get_all_weights(fromdate: date = None, todate: date = None):
 
     This will fetch all weights that are currently stored in the database without exceptions
 
-    And this path operation will:
+    Optionally:
+    **fromdate**: date %Y-%m-%s defaults to: 1900-01-01
+    **todate**: date %Y-%m-%s defaults to: date.today()
 
+    And this path operation will:
     * return [
         {
         "id": 1,
