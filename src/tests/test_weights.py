@@ -164,7 +164,7 @@ def test_get_all_weights_from_to_invalid(test_app, monkeypatch, payload, status_
 
 
 def test_update_weight(test_app, monkeypatch):
-    test_update_data = {"id": 1, "weight": 100}
+    test_update_data = {"id": 1, "weight": 100, "created_at": "2020-01-27T10:53:04"}
 
     async def mock_get(id):
         return True
@@ -176,15 +176,22 @@ def test_update_weight(test_app, monkeypatch):
 
     monkeypatch.setattr(crud, "put", mock_put)
 
-    response = test_app.put(API_PREFIX + "/weight/1", data=json.dumps(test_update_data))
+    response = test_app.put(
+        API_PREFIX + "/weight/1",
+        data=json.dumps(
+            {
+                "weight": test_update_data["weight"],
+                "created_at": test_update_data["created_at"],
+            }
+        ),
+    )
 
     assert response.status_code == 200
-    assert response.json() == test_update_data
 
 
 @pytest.mark.parametrize(
     "id, payload, status_code",
-    [[1, {}, 422], [999, {"weight": 101, "created_at": "2019-01-01"}, 404]],
+    [[1, {}, 422], [99999, {"weight": 101, "created_at": "2020-01-27T10:53:04"}, 404]],
 )
 def test_update_weight_invalid(test_app, monkeypatch, id, payload, status_code):
     async def mock_get(id):

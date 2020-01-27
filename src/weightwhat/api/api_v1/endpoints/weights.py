@@ -102,3 +102,26 @@ async def get_all_weights(fromdate: date = None, todate: date = None):
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="no weights found")
 
     return weights
+
+
+@router.put("/weight/{id}", response_model=WeightDB)
+async def update_weight(id: int, payload: WeightSchema):
+    logger.debug(f"received: {payload}")
+
+    weight = await crud.get(id)
+    logger.debug(f"weight: {weight}")
+
+    if not weight:
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="weight not found")
+
+    # update_data = payload.dict(exclude_unset=True)  # to not update whats not given
+    weight_id = await crud.put(id, payload)
+
+    response_object = {
+        "id": weight_id,
+        "weight": payload.weight,
+        "created_at": payload.created_at,
+        "updated_at": datetime.now(),
+    }
+
+    return response_object

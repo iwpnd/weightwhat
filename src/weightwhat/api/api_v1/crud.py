@@ -39,3 +39,15 @@ async def get_all(fromdate: datetime = None, todate: datetime = None):
 
     _log_query(query=str(query).replace("\n", ""), query_params="")
     return await database.fetch_all(query=query)
+
+
+async def put(id: int, payload: WeightSchema):
+    logger.debug(f"received: {payload}")
+    query = (
+        weights.update()
+        .where(id == weights.c.id)
+        .values(weight=payload.weight, created_at=payload.created_at)
+        .returning(weights.c.id)
+    )
+
+    return await database.execute(query=query)
