@@ -5,6 +5,7 @@ import time
 import concurrent.futures
 from loguru import logger
 import datetime
+import os
 
 
 def timing(f):
@@ -19,11 +20,6 @@ def timing(f):
         return ret
 
     return wrap
-
-
-df = pd.read_csv("weight.csv", usecols=["Date", "Weight (kg)"], parse_dates=True)
-df.columns = ["created_at", "weight"]
-df = df.sort_values(by="created_at", ascending=True).reset_index(drop=True)
 
 
 def post_single(weight: float, created_at: datetime = None) -> int:
@@ -43,4 +39,10 @@ def post_many():
 
 
 if __name__ == "__main__":
+
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    os.chdir(dir_path)
+    df = pd.read_csv("weight.csv", usecols=["Date", "Weight (kg)"], parse_dates=True)
+    df.columns = ["created_at", "weight"]
+    df = df.sort_values(by="created_at", ascending=True).reset_index(drop=True)
     post_many()
