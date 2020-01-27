@@ -142,33 +142,22 @@ def test_get_all_weights_from_to(test_app, monkeypatch):
     assert response.json() == response_data
 
 
-def test_get_all_weights_from_to_fails_wrong_input(test_app, monkeypatch):
+@pytest.mark.parametrize(
+    "payload, status_code",
+    [
+        [{"fromdate": "foo", "todate": "bar"}, 422],
+        [{"fromdate": 22, "todate": 20}, 404],
+    ],
+)
+def test_get_all_weights_from_to_invalid(test_app, monkeypatch, payload, status_code):
     async def mock_get_all_from_to(fromdate: date, todate: date):
         return None
 
     monkeypatch.setattr(crud, "get_all", mock_get_all_from_to)
 
-    from_date = "test"
-    to_date = "test"
-
     response = test_app.get(
-        API_PREFIX + f"/weights?fromdate={from_date}&todate={to_date}"
+        API_PREFIX
+        + f"""/weights?fromdate={payload["fromdate"]}&todate={payload["todate"]}"""
     )
 
-    assert response.status_code == 422
-
-
-def test_get_all_weights_from_to_fails(test_app, monkeypatch):
-    async def mock_get_all_from_to(fromdate: date, todate: date):
-        return None
-
-    monkeypatch.setattr(crud, "get_all", mock_get_all_from_to)
-
-    from_date = 20
-    to_date = 20
-
-    response = test_app.get(
-        API_PREFIX + f"/weights?fromdate={from_date}&todate={to_date}"
-    )
-
-    assert response.status_code == 404
+    assert response.status_code == status_code
