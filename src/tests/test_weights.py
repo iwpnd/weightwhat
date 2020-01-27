@@ -199,3 +199,33 @@ def test_update_weight_invalid(test_app, monkeypatch, id, payload, status_code):
     response = test_app.put(API_PREFIX + f"/weight/{id}", data=json.dumps(payload))
 
     assert response.status_code == status_code
+
+
+def test_remove_weight(test_app, monkeypatch):
+    test_data = {"id": 1, "weight": 100}
+
+    async def mock_get(id):
+        return test_data
+
+    monkeypatch.setattr(crud, "get", mock_get)
+
+    async def mock_delete(id):
+        return id
+
+    monkeypatch.setattr(crud, "delete", mock_delete)
+    response = test_app.delete(API_PREFIX + "/weight/1")
+
+    assert response.status_code == 200
+    assert response.json() == test_data
+
+
+def test_remove_weight_incorrect_id(test_app, monkeypatch):
+    async def mock_get(id):
+        return None
+
+    monkeypatch.setattr(crud, "get", mock_get)
+
+    response = test_app.delete(API_PREFIX + "/weight/99999")
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "weight not found"
