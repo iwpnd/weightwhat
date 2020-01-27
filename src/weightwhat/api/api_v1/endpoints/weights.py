@@ -1,6 +1,6 @@
 from weightwhat.api.api_v1 import crud
 from weightwhat.models.models import WeightDB, WeightSchema, WeightFromTo
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Path
 from datetime import datetime, date
 from starlette.status import (
     HTTP_200_OK,
@@ -43,7 +43,7 @@ async def create_weight(payload: WeightSchema) -> WeightDB:
 
 
 @router.get("/weight/{id}", response_model=WeightDB, status_code=HTTP_200_OK)
-async def get_weight(id: int):
+async def get_weight(id: int = Path(..., gt=0)):
     """
     Get a weight by id
 
@@ -110,7 +110,7 @@ async def get_all_weights(fromdate: date = None, todate: date = None):
 
 
 @router.put("/weight/{id}", response_model=WeightDB)
-async def update_weight(id: int, payload: WeightSchema):
+async def update_weight(payload: WeightSchema, id: int = Path(..., gt=0)):
     weight = await crud.get(id)
 
     if not weight:
@@ -135,7 +135,7 @@ async def update_weight(id: int, payload: WeightSchema):
 
 
 @router.delete("/weight/{id}")
-async def delete_weight(id: int):
+async def delete_weight(id: int = Path(..., gt=0)):
 
     weight = await crud.get(id)
     if not weight:
