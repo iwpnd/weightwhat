@@ -115,13 +115,15 @@ async def update_weight(id: int, payload: WeightSchema):
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="weight not found")
 
     # update_data = payload.dict(exclude_unset=True)  # to not update whats not given
-    weight_id = await crud.put(id, payload)
+    weight_record = await crud.put(id, payload)
+    weight_id = weight_record[0][0]
+    weight_updated_at = weight_record[0][1]
 
     response_object = {
         "id": weight_id,
         "weight": payload.weight,
         "created_at": payload.created_at,
-        "updated_at": datetime.now(),
+        "updated_at": weight_updated_at,
     }
 
     return response_object

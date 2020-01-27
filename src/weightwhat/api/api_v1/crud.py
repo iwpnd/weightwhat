@@ -47,7 +47,7 @@ async def put(id: int, payload: WeightSchema):
         weights.update()
         .where(id == weights.c.id)
         .values(weight=payload.weight, created_at=payload.created_at)
-        .returning(weights.c.id)
+        .returning(weights.c.id, weights.c.updated_at)
     )
 
-    return await database.execute(query=query)
+    return await database.fetch_all(query=query)
