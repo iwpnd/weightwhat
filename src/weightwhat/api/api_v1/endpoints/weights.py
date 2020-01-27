@@ -132,3 +132,15 @@ async def update_weight(id: int, payload: WeightSchema):
     }
 
     return response_object
+
+
+@router.delete("/weight/{id}")
+async def delete_weight(id: int):
+
+    weight = await crud.get(id)
+    if not weight:
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="weight not found")
+
+    await crud.delete(id)
+
+    return weight

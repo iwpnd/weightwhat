@@ -42,7 +42,7 @@ async def get_all(fromdate: datetime = None, todate: datetime = None):
 
 
 async def put(id: int, payload: WeightSchema):
-    logger.debug(f"received: {payload}")
+
     query = (
         weights.update()
         .where(id == weights.c.id)
@@ -53,3 +53,8 @@ async def put(id: int, payload: WeightSchema):
     )
 
     return await database.fetch_all(query=query)
+
+
+async def delete(id: int):
+    query = weights.delete().where(id == weights.c.id)
+    return await database.execute(query=query)
