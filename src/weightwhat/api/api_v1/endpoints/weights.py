@@ -2,7 +2,12 @@ from weightwhat.api.api_v1 import crud
 from weightwhat.models.models import WeightDB, WeightSchema, WeightFromTo
 from fastapi import APIRouter, HTTPException, Depends
 from datetime import datetime, date
-from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_404_NOT_FOUND
+from starlette.status import (
+    HTTP_200_OK,
+    HTTP_201_CREATED,
+    HTTP_404_NOT_FOUND,
+    HTTP_422_UNPROCESSABLE_ENTITY,
+)
 from loguru import logger
 from typing import List
 
@@ -106,23 +111,23 @@ async def get_all_weights(fromdate: date = None, todate: date = None):
 
 @router.put("/weight/{id}", response_model=WeightDB)
 async def update_weight(id: int, payload: WeightSchema):
-    logger.debug(f"received: {payload}")
-
     weight = await crud.get(id)
-    logger.debug(f"weight: {weight}")
 
     if not weight:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="weight not found")
 
-    # update_data = payload.dict(exclude_unset=True)  # to not update whats not given
-    weight_record = await crud.put(id, payload)
+    update_data = payload.dict(exclude_unset=True)
+    weight_record = await crud.put(id, update_data)
+
     weight_id = weight_record[0][0]
     weight_updated_at = weight_record[0][1]
+    weight_created_at = weight_record[0][2]
+    weight_weight = weight_record[0][3]
 
     response_object = {
         "id": weight_id,
-        "weight": payload.weight,
-        "created_at": payload.created_at,
+        "weight": weight_weight,
+        "created_at": weight_created_at,
         "updated_at": weight_updated_at,
     }
 
