@@ -2,12 +2,7 @@ from weightwhat.api.api_v1 import crud
 from weightwhat.models.models import WeightDB, WeightSchema, WeightFromTo
 from fastapi import APIRouter, HTTPException, Path
 from datetime import datetime, date
-from starlette.status import (
-    HTTP_200_OK,
-    HTTP_201_CREATED,
-    HTTP_404_NOT_FOUND,
-    HTTP_422_UNPROCESSABLE_ENTITY,
-)
+from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_404_NOT_FOUND
 from loguru import logger
 from typing import List
 

@@ -51,10 +51,11 @@ async def put(id: int, payload: WeightSchema) -> WeightDB:
             weights.c.id, weights.c.updated_at, weights.c.created_at, weights.c.weight
         )
     )
-
+    _log_query(query=str(query).replace("\n", ""), query_params=payload)
     return await database.fetch_all(query=query)
 
 
 async def delete(id: int) -> WeightDB:
     query = weights.delete().where(id == weights.c.id)
+    _log_query(query=str(query).replace("\n", ""), query_params=id)
     return await database.execute(query=query)
