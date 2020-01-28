@@ -1,4 +1,4 @@
-from weightwhat.models.models import WeightSchema
+from weightwhat.models.models import WeightSchema, WeightDB
 from weightwhat.db.db import database
 from weightwhat.db.schemas import weights
 from loguru import logger
@@ -10,7 +10,7 @@ def _log_query(query: str, query_params: dict = None) -> None:
     logger.debug(f"query: {str(query)}, values: {query_params}")
 
 
-async def post(payload: WeightSchema):
+async def post(payload: WeightSchema) -> int:
     query = weights.insert().values(
         weight=payload.weight,
         created_at=datetime.now().strftime(STRFTIME)
@@ -21,7 +21,7 @@ async def post(payload: WeightSchema):
     return await database.execute(query)
 
 
-async def get(id: int):
+async def get(id: int) -> WeightDB:
     query = weights.select().where(id == weights.c.id)
     _log_query(query=str(query).replace("\n", ""), query_params=id)
     return await database.fetch_one(query=query)
@@ -41,7 +41,7 @@ async def get_all(fromdate: datetime = None, todate: datetime = None):
     return await database.fetch_all(query=query)
 
 
-async def put(id: int, payload: WeightSchema):
+async def put(id: int, payload: WeightSchema) -> WeightDB:
 
     query = (
         weights.update()
@@ -55,6 +55,6 @@ async def put(id: int, payload: WeightSchema):
     return await database.fetch_all(query=query)
 
 
-async def delete(id: int):
+async def delete(id: int) -> WeightDB:
     query = weights.delete().where(id == weights.c.id)
     return await database.execute(query=query)

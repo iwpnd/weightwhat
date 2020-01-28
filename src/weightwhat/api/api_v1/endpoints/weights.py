@@ -68,7 +68,7 @@ async def get_weight(id: int = Path(..., gt=0)):
 
 
 @router.get("/weights", response_model=List[WeightDB], status_code=HTTP_200_OK)
-async def get_all_weights(fromdate: date = None, todate: date = None):
+async def get_all_weights(fromdate: date = None, todate: date = None) -> WeightDB:
     """
     Get all weights
 
@@ -95,6 +95,8 @@ async def get_all_weights(fromdate: date = None, todate: date = None):
         ]
     """
 
+    # if at least one date is given the other defaults to either the beginning (date(1900,1,1)) or
+    # date.today(). If no date is given at all, all records will be returned
     if fromdate or todate:
         limit_dates = WeightFromTo(fromdate=fromdate, todate=todate)
         weights = await crud.get_all(
@@ -110,13 +112,31 @@ async def get_all_weights(fromdate: date = None, todate: date = None):
 
 
 @router.put("/weight/{id}", response_model=WeightDB)
-async def update_weight(payload: WeightSchema, id: int = Path(..., gt=0)):
+async def update_weight(payload: WeightSchema, id: int = Path(..., gt=0)) -> WeightDB:
+    """
+    Update a weight with :id
+
+    This will let you update an existing weight in the database. You can update :weight and :created_at,
+    or just the :weight, but weight should always be present during an update.
+
+    And this path operation will:
+
+    * return {
+        "id": primary_key,
+        "weight: 88.1,
+        "created_at": "2020-11-01 13:37:00",
+        "updated_at": "2020-11-01 13:37:00"
+    }
+    """
+
     weight = await crud.get(id)
 
     if not weight:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="weight not found")
 
     update_data = payload.dict(exclude_unset=True)
+
+    # returns one record object that is subscriptable
     weight_record = await crud.put(id, update_data)
 
     weight_id = weight_record[0][0]
@@ -135,8 +155,23 @@ async def update_weight(payload: WeightSchema, id: int = Path(..., gt=0)):
 
 
 @router.delete("/weight/{id}")
-async def delete_weight(id: int = Path(..., gt=0)):
+async def delete_weight(id: int = Path(..., gt=0)) -> WeightDB:
+    """
+    Delete a weight with :id
 
+    This will delete a weight by :id from the database
+
+    And this path operation will:
+
+    Return the entry that has successfully been deleted.
+
+    * return {
+        "id": primary_key,
+        "weight: 88.1,
+        "created_at": "2020-11-01 13:37:00",
+        "updated_at": "2020-11-01 13:37:00"
+    }
+    """
     weight = await crud.get(id)
     if not weight:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="weight not found")
