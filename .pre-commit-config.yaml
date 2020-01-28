@@ -11,3 +11,8 @@ repos:
         rev: 19.3b0
         hooks:
         -   id: black
+    -   repo: https://github.com/pre-commit/pre-commit-hooks
+        rev: v1.2.3
+        hooks:
+        - id: flake8
+          args: ["--ignore=E203,W503,E501"]
