@@ -2,6 +2,7 @@ import json
 from datetime import date
 
 import pytest
+
 from weightwhat.api.api_v1 import crud
 from weightwhat.core.config import API_PREFIX
 
