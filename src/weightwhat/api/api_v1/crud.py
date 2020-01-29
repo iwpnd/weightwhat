@@ -1,9 +1,12 @@
-from weightwhat.models.models import WeightSchema, WeightDB
+from datetime import datetime
+
+from loguru import logger
+from sqlalchemy import desc
+from weightwhat.core.config import STRFTIME
 from weightwhat.db.db import database
 from weightwhat.db.schemas import weights
-from loguru import logger
-from datetime import datetime, date
-from weightwhat.core.config import STRFTIME
+from weightwhat.models.models import WeightDB
+from weightwhat.models.models import WeightSchema
 
 
 def _log_query(query: str, query_params: dict = None) -> None:
@@ -39,6 +42,11 @@ async def get_all(fromdate: datetime = None, todate: datetime = None):
 
     _log_query(query=str(query).replace("\n", ""), query_params="")
     return await database.fetch_all(query=query)
+
+
+async def get_latest():
+    query = weights.select().order_by(desc(weights.c.created_at)).limit(1)
+    return await database.fetch_one(query=query)
 
 
 async def put(id: int, payload: WeightSchema) -> WeightDB:
