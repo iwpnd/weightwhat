@@ -1,10 +1,18 @@
-from weightwhat.api.api_v1 import crud
-from weightwhat.models.models import WeightDB, WeightSchema, WeightFromTo
-from fastapi import APIRouter, HTTPException, Path
-from datetime import datetime, date
-from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_404_NOT_FOUND
-from loguru import logger
+from datetime import date
+from datetime import datetime
 from typing import List
+
+from fastapi import APIRouter
+from fastapi import HTTPException
+from fastapi import Path
+from loguru import logger
+from starlette.status import HTTP_200_OK
+from starlette.status import HTTP_201_CREATED
+from starlette.status import HTTP_404_NOT_FOUND
+from weightwhat.api.api_v1 import crud
+from weightwhat.models.models import WeightDB
+from weightwhat.models.models import WeightFromTo
+from weightwhat.models.models import WeightSchema
 
 router = APIRouter()
 
@@ -58,6 +66,31 @@ async def get_weight(id: int = Path(..., gt=0)):
         raise HTTPException(
             status_code=HTTP_404_NOT_FOUND, detail="weight id not found"
         )
+
+    return weight
+
+
+@router.get("/weight", response_model=WeightDB, status_code=HTTP_200_OK)
+async def get_latest_weight() -> WeightDB:
+    """
+    Get latest weight by created_at
+
+    This will fetch the latest created date.
+
+    And this path operation will:
+
+    * return {
+        "id": primary_key,
+        "weight: 88.1,
+        "created_at": "2020-11-01 13:37:00",
+        "updated_at": "2020-11-01 13:37:00"
+    }
+    """
+
+    weight = await crud.get_latest()
+
+    if not weight:
+        raise HTTPException(HTTP_404_NOT_FOUND, detail="no weights found")
 
     return weight
 
