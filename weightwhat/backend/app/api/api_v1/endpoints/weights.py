@@ -2,6 +2,10 @@ from datetime import date
 from datetime import datetime
 from typing import List
 
+from app.api.api_v1 import crud
+from app.models.models import WeightDB
+from app.models.models import WeightFromTo
+from app.models.models import WeightSchema
 from fastapi import APIRouter
 from fastapi import HTTPException
 from fastapi import Path
@@ -9,10 +13,6 @@ from loguru import logger
 from starlette.status import HTTP_200_OK
 from starlette.status import HTTP_201_CREATED
 from starlette.status import HTTP_404_NOT_FOUND
-from weightwhat.api.api_v1 import crud
-from weightwhat.models.models import WeightDB
-from weightwhat.models.models import WeightFromTo
-from weightwhat.models.models import WeightSchema
 
 router = APIRouter()
 

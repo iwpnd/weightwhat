@@ -1,14 +1,13 @@
-import os
 import logging
+import os
 import sys
-from typing import List
+
+from app.core.logging import InterceptHandler
 from databases import DatabaseURL
-
 from loguru import logger
-from starlette.datastructures import CommaSeparatedStrings, Secret
 from starlette.config import Config
-
-from weightwhat.core.logging import InterceptHandler
+from starlette.datastructures import CommaSeparatedStrings
+from starlette.datastructures import Secret
 
 config = Config(".env")
 

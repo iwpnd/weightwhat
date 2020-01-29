@@ -1,5 +1,5 @@
-from starlette.testclient import TestClient
 import pytest
+from starlette.testclient import TestClient
 
 from weightwhat.main import app
 

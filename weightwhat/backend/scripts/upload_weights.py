@@ -1,11 +1,11 @@
-import pandas as pd
-import json
-import requests
-import time
 import concurrent.futures
-from loguru import logger
 import datetime
 import os
+import time
+
+import pandas as pd
+import requests
+from loguru import logger
 
 
 def timing(f):

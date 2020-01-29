@@ -1,7 +1,12 @@
-from sqlalchemy import MetaData
-from sqlalchemy import Column, DateTime, Integer, Float, Table, TIMESTAMP
-from sqlalchemy.sql import func
 from typing import Tuple
+
+from sqlalchemy import Column
+from sqlalchemy import Float
+from sqlalchemy import Integer
+from sqlalchemy import MetaData
+from sqlalchemy import Table
+from sqlalchemy import TIMESTAMP
+from sqlalchemy.sql import func
 
 metadata = MetaData()
 

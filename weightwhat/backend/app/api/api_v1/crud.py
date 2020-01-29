@@ -1,12 +1,12 @@
 from datetime import datetime
 
+from app.core.config import STRFTIME
+from app.db.db import database
+from app.db.schemas import weights
+from app.models.models import WeightDB
+from app.models.models import WeightSchema
 from loguru import logger
 from sqlalchemy import desc
-from weightwhat.core.config import STRFTIME
-from weightwhat.db.db import database
-from weightwhat.db.schemas import weights
-from weightwhat.models.models import WeightDB
-from weightwhat.models.models import WeightSchema
 
 
 def _log_query(query: str, query_params: dict = None) -> None:

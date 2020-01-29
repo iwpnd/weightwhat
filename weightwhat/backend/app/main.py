@@ -1,8 +1,12 @@
+from app.api.api_v1.api import router as api_router
+from app.core.config import API_PREFIX
+from app.core.config import DEBUG
+from app.core.config import PROJECT_NAME
+from app.core.config import VERSION
+from app.db.db import database
+from app.db.db import engine
+from app.db.schemas import metadata
 from fastapi import FastAPI
-from weightwhat.api.api_v1.api import router as api_router
-from weightwhat.core.config import PROJECT_NAME, DEBUG, API_PREFIX, VERSION
-from weightwhat.db.db import database, engine
-from weightwhat.db.schemas import weights, metadata
 
 metadata.create_all(engine)
 

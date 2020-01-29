@@ -18,4 +18,4 @@ RUN set -eux \
     && pip install -r /usr/src/weightwhat/requirements.txt \
     && rm -rf /root/.cache/pip
 
-COPY ./src /usr/src/weightwhat
+COPY ./ /usr/src/weightwhat
