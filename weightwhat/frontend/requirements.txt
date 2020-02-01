@@ -1,2 +1,6 @@
 streamlit
 requests
+altair
+matplotlib
+seaborn
+bokeh
