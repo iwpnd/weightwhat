@@ -44,16 +44,19 @@ c1 = (
         ),
         x="date:T",
     )
+    .properties(height=400, width=300)
     .interactive()
 )
 
 c2 = (
-    alt.Chart(data.groupby("year_month")["diff"].sum().reset_index())
+    alt.Chart(
+        data[data.timestamp > d].groupby("year_month")["diff"].sum().reset_index()
+    )
     .mark_bar()
     .encode(y="year_month", x="diff:Q")
+    .properties(height=400, width=200)
     .interactive()
 )
 
-# c3 = alt.hconcat(c1, c2)
-st.altair_chart(c1, use_container_width=True)
-st.altair_chart(c2, use_container_width=True)
+c3 = c1 | c2
+st.altair_chart(c3, use_container_width=True)
