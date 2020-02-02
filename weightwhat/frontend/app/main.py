@@ -44,6 +44,7 @@ c1 = (
         alt.Y(
             "weight",
             scale=alt.Scale(domain=[data.weight.max() * 0.8, data.weight.max()]),
+            title="weight in kg",
         ),
         x="date:T",
     )
@@ -52,13 +53,11 @@ c1 = (
 )
 
 c2 = (
-    alt.Chart(
-        data[data.timestamp > d].groupby("year_month")["diff"].sum().reset_index()
-    )
+    alt.Chart(data[data.timestamp > d].groupby("year_week")["diff"].sum().reset_index())
     .mark_bar()
     .encode(
-        y="year_month",
-        x="diff:Q",
+        y=alt.Y("year_week", title="week"),
+        x=alt.X("diff:Q", title="difference to day before (in kg)"),
         color=alt.condition(
             alt.datum.diff < 0,
             alt.value("green"),  # The positive color
@@ -100,8 +99,9 @@ chart_c4 = (
                     data[data.year_week == options].weight.max(),
                 ]
             ),
+            title="weight in kg",
         ),
-        x=alt.X("day_name", sort=weekdays),
+        x=alt.X("day_name", sort=weekdays, title="day of week"),
     )
 )
 
@@ -119,14 +119,15 @@ c5 = (
     alt.Chart(data)
     .mark_circle(color="black")
     .encode(
-        x=alt.X("diff"),
-        y=alt.Y("day_name", sort=weekdays),
+        x=alt.X("diff", title="difference to day before (in kg)"),
+        y=alt.Y("day_name", sort=weekdays, title="day of week"),
         color=alt.condition(
             alt.datum.diff < 0,
             alt.value("green"),  # The positive color
             alt.value("red"),  # The negative color
         ),
     )
+    .configure_mark(opacity=0.2)
 )
 
 
