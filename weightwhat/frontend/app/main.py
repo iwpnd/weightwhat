@@ -25,6 +25,7 @@ def preprocess_data(raw_data):
     return data
 
 
+@st.cache
 def load_data():
     response = requests.get("http://api:8000/api/weights")
     raw_data = pd.DataFrame(response.json())
@@ -34,7 +35,7 @@ def load_data():
 
 data = load_data()
 
-d = pd.to_datetime(st.date_input("Weightloss since:", data.timestamp.min()), utc=True)
+d = pd.to_datetime(st.date_input("Weight loss since:", data.timestamp.min()), utc=True)
 
 c1 = (
     alt.Chart(data[data.timestamp > d])
@@ -81,11 +82,15 @@ weekdays = [
     "Sunday",
 ]
 
-options = st.selectbox("Weight loss by week:", data.year_week.unique().tolist())
+options = st.selectbox(
+    "Weight loss by week:",
+    data.year_week.unique().tolist(),
+    index=data.year_week.unique().tolist().index(data.year_week.unique().tolist()[-1]),
+)
 
-c4 = (
+chart_c4 = (
     alt.Chart(data[data.year_week == options])
-    .mark_line(color="black")
+    .mark_circle(color="black")
     .encode(
         y=alt.Y(
             "weight",
@@ -99,6 +104,14 @@ c4 = (
         x=alt.X("day_name", sort=weekdays),
     )
 )
+
+text_c4 = chart_c4.mark_text(
+    align="left",
+    baseline="middle",
+    dx=5,  # Nudges text to right so it doesn't appear on top of the bar
+).encode(text="weight:Q")
+
+c4 = chart_c4 + text_c4
 
 st.altair_chart(c4, use_container_width=True)
 
@@ -115,6 +128,7 @@ c5 = (
         ),
     )
 )
+
 
 st.altair_chart(c5, use_container_width=True)
 
