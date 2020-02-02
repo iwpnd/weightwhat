@@ -53,7 +53,15 @@ c2 = (
         data[data.timestamp > d].groupby("year_month")["diff"].sum().reset_index()
     )
     .mark_bar()
-    .encode(y="year_month", x="diff:Q")
+    .encode(
+        y="year_month",
+        x="diff:Q",
+        color=alt.condition(
+            alt.datum.diff < 0,
+            alt.value("steelblue"),  # The positive color
+            alt.value("orange"),  # The negative color
+        ),
+    )
     .properties(height=400, width=200)
     .interactive()
 )
