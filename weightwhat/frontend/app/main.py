@@ -6,13 +6,13 @@ import pandas as pd
 import requests
 import streamlit as st
 
-st.title("Weightwhat")
+st.title("Weightwhat?")
 st.write("Weight tracking and analysis")
 
 
 def preprocess_data(raw_data):
     data = raw_data.sort_values(by="created_at", ascending=True).reset_index(drop=True)
-    data = data[["weight", "created_at"]]
+    data = data[["id", "weight", "created_at"]]
     data["timestamp"] = pd.to_datetime(data["created_at"])
     data["date"] = data["timestamp"].dt.date
     data["year_month"] = data["timestamp"].dt.strftime("%Y-%m")
@@ -39,7 +39,7 @@ d = pd.to_datetime(st.date_input("Weight loss since:", data.timestamp.min()), ut
 
 c1 = (
     alt.Chart(data[data.timestamp > d])
-    .mark_line(color="black")
+    .mark_line(color="#282a36", size=1)
     .encode(
         alt.Y(
             "weight",
@@ -47,10 +47,27 @@ c1 = (
             title="weight in kg",
         ),
         x="date:T",
+        tooltip=["id", "weight"],
     )
     .properties(height=400, width=300)
     .interactive()
 )
+c1_circle = (
+    alt.Chart(data[data.timestamp > d])
+    .mark_circle(color="#ff79c6", size=10)
+    .encode(
+        alt.Y(
+            "weight",
+            scale=alt.Scale(domain=[data.weight.max() * 0.8, data.weight.max()]),
+            title="weight in kg",
+        ),
+        x="date:T",
+        tooltip=["id", "weight"],
+    )
+    .properties(height=400, width=300)
+    .interactive()
+)
+
 
 c2 = (
     alt.Chart(data[data.timestamp > d].groupby("year_week")["diff"].sum().reset_index())
@@ -60,8 +77,8 @@ c2 = (
         x=alt.X("diff:Q", title="difference to day before (in kg)"),
         color=alt.condition(
             alt.datum.diff < 0,
-            alt.value("green"),  # The positive color
-            alt.value("red"),  # The negative color
+            alt.value("#50fa7b"),  # The positive color
+            alt.value("#ff5555"),  # The negative color
         ),
         tooltip=["diff"],
     )
@@ -69,7 +86,7 @@ c2 = (
     .interactive()
 )
 
-c3 = c1 | c2
+c3 = c1 + c1_circle | c2
 st.altair_chart(c3, use_container_width=True)
 
 weekdays = [
@@ -118,11 +135,11 @@ c5 = (
         y=alt.Y("day_name", sort=weekdays, title="day of week"),
         color=alt.condition(
             alt.datum.diff < 0,
-            alt.value("green"),  # The positive color
-            alt.value("red"),  # The negative color
+            alt.value("#50fa7b"),  # The positive color
+            alt.value("#ff5555"),  # The negative color
         ),
     )
-    .configure_mark(opacity=0.2)
+    .configure_mark(opacity=0.3)
 )
 
 
@@ -143,3 +160,17 @@ if st.sidebar.button("add"):
         st.sidebar.success("Weight added")
     else:
         st.sidebar.exception(RuntimeError("Weight could not be added"))
+
+
+st.sidebar.subheader("Delete weight")
+del_id = int(st.sidebar.number_input("ID"))
+
+
+if st.sidebar.button("delete"):
+    response = requests.delete(f"http://api:8000/api/weight/{del_id}")
+    if response.status_code == 200:
+        st.sidebar.success("Weight deleted")
+    else:
+        st.sidebar.exception(
+            RuntimeError(f"No Weight found at id:{del_id} could not be deleted")
+        )
