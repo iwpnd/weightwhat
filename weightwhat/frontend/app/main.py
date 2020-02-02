@@ -59,22 +59,6 @@ c1 = (
     .properties(height=400, width=300)
     .interactive()
 )
-c1_circle = (
-    alt.Chart(data[data.timestamp > d])
-    .mark_circle(color="#ff79c6", size=10)
-    .encode(
-        alt.Y(
-            "weight",
-            scale=alt.Scale(domain=[data.weight.max() * 0.8, data.weight.max()]),
-            title="weight in kg",
-        ),
-        x="date:T",
-        tooltip=["id", "weight"],
-    )
-    .properties(height=400, width=300)
-    .interactive()
-)
-
 
 c2 = (
     alt.Chart(data[data.timestamp > d].groupby("year_week")["diff"].sum().reset_index())
@@ -93,7 +77,8 @@ c2 = (
     .interactive()
 )
 
-c3 = c1 + c1_circle | c2
+c3 = c1 | c2
+
 st.altair_chart(c3, use_container_width=True)
 
 weekdays = [
@@ -127,7 +112,7 @@ c4 = (
             title="weight in kg",
         ),
         x=alt.X("day_name", sort=weekdays, title="day of week"),
-        tooltip=["weight"],
+        tooltip=["weight", "created_at"],
     )
     .interactive()
 )
