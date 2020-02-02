@@ -63,6 +63,7 @@ c2 = (
             alt.value("green"),  # The positive color
             alt.value("red"),  # The negative color
         ),
+        tooltip=["diff"],
     )
     .properties(height=400, width=200)
     .interactive()
@@ -87,7 +88,7 @@ options = st.selectbox(
     index=data.year_week.unique().tolist().index(data.year_week.unique().tolist()[-1]),
 )
 
-chart_c4 = (
+c4 = (
     alt.Chart(data[data.year_week == options])
     .mark_circle(color="black")
     .encode(
@@ -102,16 +103,10 @@ chart_c4 = (
             title="weight in kg",
         ),
         x=alt.X("day_name", sort=weekdays, title="day of week"),
+        tooltip=["weight"],
     )
+    .interactive()
 )
-
-text_c4 = chart_c4.mark_text(
-    align="left",
-    baseline="middle",
-    dx=5,  # Nudges text to right so it doesn't appear on top of the bar
-).encode(text="weight:Q")
-
-c4 = chart_c4 + text_c4
 
 st.altair_chart(c4, use_container_width=True)
 
