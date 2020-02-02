@@ -35,6 +35,13 @@ def load_data():
 
 data = load_data()
 
+st.sidebar.title("Options")
+st.sidebar.subheader("Show raw data")
+show_raw_data = st.sidebar.checkbox("Show raw data")
+
+if show_raw_data:
+    st.dataframe(data[["id", "weight", "created_at"]])
+
 d = pd.to_datetime(st.date_input("Weight loss since:", data.timestamp.min()), utc=True)
 
 c1 = (
@@ -164,7 +171,6 @@ if st.sidebar.button("add"):
 
 st.sidebar.subheader("Delete weight")
 del_id = int(st.sidebar.number_input("ID"))
-
 
 if st.sidebar.button("delete"):
     response = requests.delete(f"http://api:8000/api/weight/{del_id}")
