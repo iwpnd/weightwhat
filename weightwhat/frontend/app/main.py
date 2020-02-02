@@ -1,3 +1,6 @@
+import datetime
+import json
+
 import altair as alt
 import pandas as pd
 import requests
@@ -7,7 +10,6 @@ st.title("Weightwhat")
 st.write("Weight tracking and analysis")
 
 
-@st.cache
 def preprocess_data(raw_data):
     data = raw_data.sort_values(by="created_at", ascending=True).reset_index(drop=True)
     data = data[["weight", "created_at"]]
@@ -23,7 +25,6 @@ def preprocess_data(raw_data):
     return data
 
 
-@st.cache
 def load_data():
     response = requests.get("http://api:8000/api/weights")
     raw_data = pd.DataFrame(response.json())
@@ -37,7 +38,7 @@ d = pd.to_datetime(st.date_input("Weightloss since:", data.timestamp.min()), utc
 
 c1 = (
     alt.Chart(data[data.timestamp > d])
-    .mark_line()
+    .mark_line(color="black")
     .encode(
         alt.Y(
             "weight",
@@ -59,8 +60,8 @@ c2 = (
         x="diff:Q",
         color=alt.condition(
             alt.datum.diff < 0,
-            alt.value("steelblue"),  # The positive color
-            alt.value("orange"),  # The negative color
+            alt.value("green"),  # The positive color
+            alt.value("red"),  # The negative color
         ),
     )
     .properties(height=400, width=200)
@@ -105,14 +106,30 @@ c5 = (
     alt.Chart(data)
     .mark_circle(color="black")
     .encode(
-        y=alt.Y("diff"),
-        x=alt.X("day_name", sort=weekdays),
+        x=alt.X("diff"),
+        y=alt.Y("day_name", sort=weekdays),
         color=alt.condition(
             alt.datum.diff < 0,
-            alt.value("red"),  # The positive color
-            alt.value("green"),  # The negative color
+            alt.value("green"),  # The positive color
+            alt.value("red"),  # The negative color
         ),
     )
 )
 
 st.altair_chart(c5, use_container_width=True)
+
+st.sidebar.subheader("Add weight")
+weight = st.sidebar.number_input("Weight")
+date = st.sidebar.date_input("Measured at:")
+date = datetime.datetime(date.year, date.month, date.day)
+
+
+if st.sidebar.button("add"):
+    response = requests.post(
+        "http://api:8000/api/weight",
+        data=json.dumps({"weight": weight, "created_at": str(date)}),
+    )
+    if response.status_code == 201:
+        st.sidebar.success("Weight added")
+    else:
+        st.sidebar.exception(RuntimeError("Weight could not be added"))
