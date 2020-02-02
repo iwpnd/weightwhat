@@ -100,3 +100,19 @@ c4 = (
 )
 
 st.altair_chart(c4, use_container_width=True)
+
+c5 = (
+    alt.Chart(data)
+    .mark_circle(color="black")
+    .encode(
+        y=alt.Y("diff"),
+        x=alt.X("day_name", sort=weekdays),
+        color=alt.condition(
+            alt.datum.diff < 0,
+            alt.value("red"),  # The positive color
+            alt.value("green"),  # The negative color
+        ),
+    )
+)
+
+st.altair_chart(c5, use_container_width=True)
